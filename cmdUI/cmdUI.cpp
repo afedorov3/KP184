@@ -33,108 +33,108 @@ static void sig_term_handler(int signum, siginfo_t *info, void *ptr)
 #define NEWLINEQ 1  /* exit quoting on newline */
 static char** line2argv(const char* cmdl, int maxlen, int* argc)
 {
-    char a;
-    int i, j, len = 0, _argc, argstart;
-	char** argv;
-	char* _argv;
-    bool in_QM, in_ES;
+  char a;
+  int i, j, len = 0, _argc, argstart;
+  char** argv;
+  char* _argv;
+  bool in_QM, in_ES;
 
-	if (cmdl == NULL || maxlen == 0)
-      return NULL;
+  if (cmdl == NULL || maxlen == 0)
+    return NULL;
 
-    /* cmdl length */
-    if (maxlen > 0)
-      len = strnlen(cmdl, maxlen);
-    else
-      len = strlen(cmdl);
+  /* cmdl length */
+  if (maxlen > 0)
+    len = strnlen(cmdl, maxlen);
+  else
+    len = strlen(cmdl);
 
-    i = ((len + 2)/2) * sizeof(void*) + sizeof(void*);
+  i = ((len + 2)/2) * sizeof(void*) + sizeof(void*);
 
-	/* pointers + storage + 2xNULL */
-    argv = (char**)malloc(i + len + 2);
-    if (argv == NULL)
-      return NULL;
+  /* pointers + storage + 2xNULL */
+  argv = (char**)malloc(i + len + 2);
+  if (argv == NULL)
+    return NULL;
 
-    /* storage pointer = argv + pointers */
-    _argv = (char*)(((char*)argv) + i);
+  /* storage pointer = argv + pointers */
+  _argv = (char*)(((char*)argv) + i);
 
-    in_QM = in_ES = false;
-    i = j = _argc = argstart = 0;
+  in_QM = in_ES = false;
+  i = j = _argc = argstart = 0;
 
-    while( (i < len) && (a = cmdl[i++]) ) {
+  while( (i < len) && (a = cmdl[i++]) ) {
 #ifdef PRINTABLE
-        if (!isprint(a))
-          continue;
+    if (!isprint(a))
+      continue;
 #endif /* PRINTABLE */
-		if(in_ES) {        /* in escape */
-            switch(a) {
+    if(in_ES) {        /* in escape */
+      switch(a) {
 #ifdef TRNEWLINE
-            case 'r':
-            case 'n':
-              _argv[j++] = '\n';
-              break;
+      case 'r':
+      case 'n':
+        _argv[j++] = '\n';
+        break;
 #endif /* TRNEWLINE */
-            case 't':
-              _argv[j++] = '\t';
-              break;
-            default:
-              _argv[j++] = '\\';
-            case ' ':
-            case '\"':
-			  _argv[j++] = a;
-              break;
-			}
-            in_ES = false;
-		} else if(in_QM) { /* in quoting */
-            switch(a) {
-            case '\\':
-              in_ES = true;
-              break;
+      case 't':
+        _argv[j++] = '\t';
+        break;
+      default:
+        _argv[j++] = '\\';
+      case ' ':
+      case '\"':
+        _argv[j++] = a;
+        break;
+      }
+      in_ES = false;
+    } else if(in_QM) { /* in quoting */
+      switch(a) {
+      case '\\':
+        in_ES = true;
+        break;
 #ifdef NEWLINEQ
-            case '\r':
-            case '\n':
+      case '\r':
+      case '\n':
 #endif /* NEWLINEQ */
-            case '\"':
-              in_QM = false;
-              break;
-            default:
-              _argv[j++] = a;
-              break;
-            }
-        } else {
-            switch(a) {
-            case '\"': /* quoting */
-              in_QM = true;
-              break;
-			case '\\': /* escape */
-			  in_ES = true;
-			  break;
-            case ' ':  /* spacers */
-            case '\t':
-            case '\n':
-            case '\r':
-              if(argstart == -1) {
-                 _argv[j++] = '\0';
-                 /* remember next argument start position */
-                 argstart = j;
-              }
-              continue;
-            default:  /* text */
-              _argv[j++] = a;
-              break;
-            }
-            if(argstart != -1) {
-              /* write current argument ptr */
-              argv[_argc++] = _argv + argstart;
-              argstart = -1;
-            }
+      case '\"':
+        in_QM = false;
+        break;
+      default:
+        _argv[j++] = a;
+        break;
+      }
+    } else {
+      switch(a) {
+      case '\"': /* quoting */
+        in_QM = true;
+        break;
+      case '\\': /* escape */
+        in_ES = true;
+        break;
+      case ' ':  /* spacers */
+      case '\t':
+      case '\n':
+      case '\r':
+        if(argstart == -1) {
+          _argv[j++] = '\0';
+          /* remember next argument start position */
+          argstart = j;
         }
+        continue;
+      default:  /* text */
+        _argv[j++] = a;
+        break;
+      }
+      if(argstart != -1) {
+        /* write current argument ptr */
+        argv[_argc++] = _argv + argstart;
+        argstart = -1;
+      }
     }
-    _argv[j] = '\0';   /* NULL terminators */
-    argv[_argc] = NULL;
-	if (argc)
-      *argc = (int)_argc;
-	return argv;
+  }
+  _argv[j] = '\0';   /* NULL terminators */
+  argv[_argc] = NULL;
+  if (argc)
+    *argc = (int)_argc;
+  return argv;
 }
 
 int int_quit(int argc, char *argv[])
