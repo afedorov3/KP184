@@ -4,9 +4,9 @@ CXXFLAGS += -Wall -Iinclude
 DEFINES += -DHAVE_READLINE -DMBDEBUG
 ifeq ($(shell uname -o),Cygwin)
     EXESFX = .exe
-	LIBS_KP184CMD += -L/usr/bin -lcygreadline7
+    LIBS_KP184CMD += -L/usr/bin -lcygreadline7
 else
-	LIBS_KP184CMD += -lreadline
+    LIBS_KP184CMD += -lreadline
 endif
 
 KP184CMD_OBJS = cmdUI/dev_KP184.opp cmdUI/cmdUI.opp
