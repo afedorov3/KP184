@@ -218,10 +218,10 @@ int main(int argc, char *argv[])
     case 'a': saddr = optarg; break;
     case 'l': sload = optarg; break;
     case 'v': svlthres = optarg; break;
-	case 'V': svhthres = optarg; break;
+    case 'V': svhthres = optarg; break;
     case 'c': sclthres = optarg; break;
-	case 'C': schthres = optarg; break;
-	case 'T': stend = optarg; break;
+    case 'C': schthres = optarg; break;
+    case 'T': stend = optarg; break;
     case 'i': sint = optarg; break;
     case 'N': sn0samp = optarg; break;
     case 'n': sntsamp = optarg; break;
