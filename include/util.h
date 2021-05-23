@@ -84,10 +84,10 @@ public:
 
   /* from iproute2 */
   static int matches(const char cmd[], const char pattern[]) {
-  	size_t len = strlen(cmd);
-  	if (len > strlen(pattern))
-  		return -1;
-  	return strncasecmp(pattern, cmd, len);
+    size_t len = strlen(cmd);
+    if (len > strlen(pattern))
+      return -1;
+    return strncasecmp(pattern, cmd, len);
   }
 
   static int str2b(const char str[], bool &val) {
