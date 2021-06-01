@@ -535,11 +535,14 @@ looperr:
     fprintf(stderr, "\nERR Communicating device: %s\n", strerror(-rc));
     fprintf(stderr, "Trying to reconnect");
     do {
-      sleep(1);
+      usleep(900000UL);
       fputs(".\a", stderr);
-      if ((rc = kp184.reOpen()) == 0)
-        rc = setup(kp184, mode, load);
+      if ((rc = kp184.reOpen()) != 0) continue;
+      if ((rc = setup(kp184, mode, load)) != 0) continue;
+      usleep(interframe_delay);
+      if (sampleno >= n0samp) rc = kp184.setOutput(true);
     } while((term == TERM_NONE) && (rc != 0));
+    usleep(interframe_delay);
     fputs("\n", stderr);
   }
 
