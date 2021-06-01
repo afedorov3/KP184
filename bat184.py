@@ -166,9 +166,9 @@ def processfile(infile):
     print(' {:s} saved'.format(plotfile))
 
 def main(argv):
-    parser = argparse.ArgumentParser(description='121GW battery capacity calculator.')
+    parser = argparse.ArgumentParser(description='KP184 battery capacity calculator.')
     parser.add_argument('files', metavar='file.csv', type=str, nargs='+',
-                        help='121GW log file path to process')
+                        help='Path to CSV file produced by battery app')
     parser.add_argument('--plot', '-p', dest='bplot', action='store_const',
                         const=True, default=False,
                         help='Plot to png file')
