@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
   if (!quiet) {
     fprintf(stderr, "Connection: %s %s%s%s address %hhu\n", Link::linkTypeStr(ltype), link, lconf ? " " : "",
                     lconf ? lconf : "", kp184.getAddress());
-    fprintf(stderr, "Settins:\n Mode: %s\n Load: %g %s\n Low voltage threshold: %g V\n",
+    fprintf(stderr, "Settings:\n Mode: %s\n Load: %g %s\n Low voltage threshold: %g V\n",
                     KP184::modeStr(mode), load, KP184::modeUnit(mode), vlthres);
     if (svhthres)
       fprintf(stderr, " HL threshold: %g V\n", vhthres);
