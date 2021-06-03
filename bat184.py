@@ -61,7 +61,7 @@ def processfile(infile):
         csvfile.close()
 
     interval = (time - stime) / samples
-    print(' samples: {:d}, mean interval: {:g}s'.format(samples, interval))
+    print('  Samples: {:d}, mean interval: {:g}s'.format(samples, interval))
     tdelta = datetime.timedelta(seconds = round(time - stime))
     strtime = 'Time: ' + str(tdelta)
     cprefix = ''
@@ -81,9 +81,9 @@ def processfile(infile):
 
     if not args.bplot: return
 
-    flabel = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 16, 'color':'0.8'}
-    fdescr = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 24, 'color':'0.8'}
-    fdata = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 16, 'color':'0.8'}
+    fxlabel = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 16, 'color':'0.8'}
+    finfo = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 16, 'color':'0.8'}
+    flabel = {'family' : 'DejaVu Sans', 'weight' : 'bold', 'size': 24, 'color':'0.9'}
     ctick = '0.85'
     ctickl = '0.85'
     cgrid = '0.5'
@@ -94,7 +94,7 @@ def processfile(infile):
     my_dpi=96
     plt.figure(figsize=(1920/my_dpi, 1080/my_dpi), dpi=my_dpi)
     plt.xlim(-30/3600, t[-1]+30/3600)
-    plt.xlabel("Time (h:m)", fontdict=flabel, labelpad=10)
+    plt.xlabel("Time (h:m)", fontdict=fxlabel, labelpad=10)
     ax = plt.gca()
     ax.set_facecolor(cface)
     #ax.set_title('Battery discharge curve (' + str(tdelta)+')', fontdict=fdescr, pad=20)
@@ -118,10 +118,21 @@ def processfile(infile):
     ax.spines['bottom'].set_color(ctick)
     ax.spines['left'].set_color(ctick)
 
+    # Label
     vmin = min(v) - 0.1
     vmax = max(v) + 0.1
+    if args.slabel:
+        args.slabel = args.slabel[:80] + (args.slabel[80:] and '...')
+        plt.text(max(t)*0.5, vmax+(vmax - vmin)*0.075, args.slabel,
+            ha="center", va="bottom", fontdict=flabel,
+            bbox=dict(boxstyle="round",
+                        ec=cface,
+                        fc=cface
+                        )
+            )
+    # Info
     plt.text(max(t)*0.5, vmax+(vmax - vmin)*0.03, strtime + '  ' + strcap + '  ' + strenr,
-        ha="center", va="bottom", fontdict=fdata,
+        ha="center", va="bottom", fontdict=finfo,
         bbox=dict(boxstyle="round",
                     ec=cface,
                     fc=cface
@@ -134,12 +145,12 @@ def processfile(infile):
     if not args.bplotc:
         vlabel += ' @avg. current '
         if mcur >= 1.0:
-            vlabel += '{:.2f} A'.format(mcur)
+            vlabel += '{:g} A'.format(mcur)
         else:
             vlabel += '{:.0f} mA'.format(mcur*1000)
     plots = plt.plot(t, v, color=cplotv, linewidth=2, label=vlabel)
     plt.ylim(vmin, vmax)
-    plt.ylabel("Voltage (V)", fontdict=flabel, color=cplotv, labelpad=10)
+    plt.ylabel("Voltage (V)", fontdict=fxlabel, color=cplotv, labelpad=10)
     plt.tick_params('y', labelcolor=cplotv)
 
     plt.grid(True)
@@ -149,7 +160,7 @@ def processfile(infile):
         axc = plt.twinx()
         plots += axc.plot(t, c, color=cplotc, linewidth=2, label='Current')
         axc.set_ylim(min(c) - 0.1, max(c) + 0.1)
-        axc.set_ylabel("Current (A)", fontdict=flabel, color=cplotc, labelpad=10)
+        axc.set_ylabel("Current (A)", fontdict=fxlabel, color=cplotc, labelpad=10)
         axc.tick_params('y', labelcolor=cplotc)
         axc.tick_params(width=2, grid_linewidth=2, length=5, color=ctick, grid_color=ctick, labelcolor=cplotc, labelsize=12)
         axc.spines['right'].set_color(ctick)
@@ -169,15 +180,18 @@ def main(argv):
     parser = argparse.ArgumentParser(description='KP184 battery capacity calculator.')
     parser.add_argument('files', metavar='file.csv', type=str, nargs='+',
                         help='Path to CSV file produced by battery app')
-    parser.add_argument('--plot', '-p', dest='bplot', action='store_const',
-                        const=True, default=False,
+    parser.add_argument('--plot', '-p', dest='bplot', action='store_true',
+                        default=False,
                         help='Plot to png file')
-    parser.add_argument('--plotc', '-c', dest='bplotc', action='store_const',
-                        const=True, default=False,
+    parser.add_argument('--plotc', '-c', dest='bplotc', action='store_true',
+                        default=False,
                         help='Also plot current')
-    parser.add_argument('--whole', '-w', dest='bwhole', action='store_const',
-                        const=True, default=False,
+    parser.add_argument('--whole', '-w', dest='bwhole', action='store_true',
+                        default=False,
                         help='Read whole file regardless of V/I data')
+    parser.add_argument('--label', '-l', dest='slabel', action='store',
+                        default=None, type=str,
+                        help='Add a label to the graph')
     global args
     args = parser.parse_args()
 
