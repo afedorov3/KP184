@@ -133,7 +133,7 @@ public:
     m_fd = sockfd;
     m_type = SOCKET;
     m_addrstr = addr;
-    m_confstr.erase();
+    m_confstr.clear();
 
     return 0;
   }
@@ -264,7 +264,7 @@ public:
 
     sattr.c_oflag = 0; // no remapping, no delays
 
-    while (config) {
+    while (config && *config) {
       char *eptr;
       int i;
       long ibaud;
@@ -365,7 +365,8 @@ public:
     m_fd = serfd;
     m_type = SERIAL;
     m_addrstr = path;
-    m_confstr = config;
+    if (config && *config) m_confstr = config;
+    else m_confstr.clear();
 
     return 0;
 
@@ -399,8 +400,8 @@ serfail:
     if (rc == 0) {
       m_fd = -1;
       m_type = NONE;
-      m_addrstr.erase();
-      m_confstr.erase();
+      m_addrstr.clear();
+      m_confstr.clear();
     }
 
     return rc;
