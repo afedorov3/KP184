@@ -231,10 +231,10 @@ static int process_command(int fd, char *line, int len)
 
 void usage(const char *prog)
 {
-  printf("usage: %s <-t tty|-s host[:port]> [-T conf] [\"cmd 1\"] ...\n", prog);
+  printf("usage: %s <-t tty|-s host[:port]> [-B conf] [\"cmd 1\"] ...\n", prog);
   printf(" -t: communicate via TTY port\n");
   printf(" -s: communicate via socket\n");
-  printf(" -T: serial configuration string [%s]\n", getDefaultConfig(Link::SERIAL));
+  printf(" -B: serial configuration string [%s]\n", getDefaultConfig(Link::SERIAL));
 }
 
 int main(int argc, char *argv[])
@@ -249,11 +249,11 @@ int main(int argc, char *argv[])
   char c;
 
   opterr = 0;
-  while ((c = getopt(argc, argv, "t:s:T:")) != -1) {
+  while ((c = getopt(argc, argv, "t:s:B:")) != -1) {
     switch(c) {
     case 't': ltype = Link::SERIAL; link = optarg; break;
     case 's': ltype = Link::SOCKET; link = optarg; break;
-    case 'T': lconf = optarg; break;
+    case 'B': lconf = optarg; break;
     case '?':
     case 'h':
     default: usage(prog); return 1;
