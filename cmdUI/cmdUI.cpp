@@ -56,7 +56,7 @@ static char** line2argv(const char* cmdl, int maxlen, int* argc)
     return NULL;
 
   /* storage pointer = argv + pointers */
-  _argv = (char*)(((char*)argv) + i);
+  _argv = (char*)(argv + i);
 
   in_QM = in_ES = false;
   i = j = _argc = argstart = 0;
